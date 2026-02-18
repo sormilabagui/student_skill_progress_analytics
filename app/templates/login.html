@@ -3,9 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Login - Skill Analytics</title>
+    <style>
+        body{
+            font-family: Arial;
+            
+            background-image: linear-gradient(to bottom, white, rgb(255, 138, 157));
+            
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            height:100vh;
+        }
+        .box{
+            background-color: rgb(255 255 255 /70%);
+            width: 650px;
+            height: 450px;
+            padding:40px;
+            border-radius:9px;
+            
+            text-align:center;
+            color:black;
+        }
+        input{
+            width:100%;
+            padding:10px;
+            margin:10px 0;
+            border-radius:6px;
+            border:none;
+            background: #CDCDCB;
+        }
+        button{
+            width:100%;
+            padding:10px;
+            background:#D84596;
+            border:none;
+            border-radius:6px;
+            font-weight:bold;
+        }
+        a{
+            color:#D84596;
+            text-decoration:none;
+        }
+    </style>
 </head>
 <body>
-    <h1>hello</h1>
+    
+
+
+    
+
+
+<div class="box">
+    <h2>Login</h2>
+
+
+<form action="/dashboard">
+    <input type="email" placeholder="Email">
+    <input type="password" placeholder="Password">
+    <button type="submit">Login</button>
+</form>
+
+<p style="margin-top:15px;">
+    Don't have account?
+    <a href="/signup">Sign up</a>
+</p>
+
+
+</div>
+
+
 </body>
 </html>
