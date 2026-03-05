@@ -13,7 +13,7 @@ def create_app():
     login_manager.login_view = "auth.login"
 
     # THIS LINE REGISTERS user_loader
-    from . import login_manager
+    from . import login_config
     
 
     from .routes import main

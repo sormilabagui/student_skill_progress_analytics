@@ -59,9 +59,9 @@
     <h2>Login</h2>
 
 
-<form action="/dashboard">
-    <input type="email" placeholder="Email">
-    <input type="password" placeholder="Password">
+<form method="post" action="/login">
+    <input type="email" placeholder="Email" name="email" required>
+    <input type="password" placeholder="Password" name="password" required>
     <button type="submit">Login</button>
 </form>
 
