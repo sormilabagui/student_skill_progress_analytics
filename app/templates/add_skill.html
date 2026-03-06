@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Add Skill</h2>
+
+    <form method="POST">
+        <input type="text" name="skill_name" placeholder="Skill Name" required>
+
+        <br><br>
+
+        <select name="category_id">
+        {% for category in categories %}
+        <option value="{{category.id}}">{{category.name}}</option>
+        {% endfor %}
+        </select>
+
+        <br><br>
+
+        <input type="number" name="weight" placeholder="Weight">
+        <br><br>
+        <button type="submit">Add Skill</button>
+
+    </form>
+</body>
+</html>
