@@ -9,10 +9,18 @@ main = Blueprint('main', __name__)
 def home():
     return render_template("login.html")
 
-@main.route("/dashboard")
-@login_required
-def dashboard():
-    return render_template("dashboard.html", user=current_user)
+
+
+
+@main.route("/admin_dashboard")
+def admin_dashboard():
+    return render_template("admin_dashboard.html", user=current_user)
+
+
+@main.route("/user_dashboard")
+def user_dashboard():
+    return render_template("user_dashboard.html", user=current_user)
+
 
 @main.route("/admin/add-category", methods=["GET", "POST"])
 def add_category():
@@ -30,7 +38,7 @@ def add_category():
         db.session.add(new_category)
         db.session.commit()
 
-        return redirect(url_for("main.dashboard"))
+        return redirect(url_for("main.admin_dashboard"))
 
     return render_template("add_category.html")
 
@@ -55,6 +63,6 @@ def add_skill():
         db.session.add(new_skill)
         db.session.commit()
 
-        return redirect(url_for("main.dashboard"))
+        return redirect(url_for("main.admin_dashboard"))
 
     return render_template("add_skill.html", categories=categories)

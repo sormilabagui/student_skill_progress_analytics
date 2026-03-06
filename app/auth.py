@@ -25,7 +25,8 @@ def signup():
         new_user = User(
             name=name,
             email=email,
-            password_hash=hashed_pwd
+            password_hash=hashed_pwd,
+            role="user"
         )
 
         db.session.add(new_user)
@@ -51,7 +52,10 @@ def login():
             return "Wrong password"
         
         login_user(user)
-        return redirect(url_for("main.dashboard"))
+        if user.role == "admin":
+            return redirect(url_for("main.admin_dashboard"))
+        else:
+            return redirect(url_for("main.user_dashboard"))
     
 
     return render_template("login.html")
