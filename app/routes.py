@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from .models import SkillCategory, Skill, UserSkill
+from .models import SkillCategory, Skill, UserSkill, Goal
 from .extensions import db
 from flask_login import login_required, current_user
 
@@ -18,11 +18,36 @@ def admin_dashboard():
     return render_template("admin_dashboard.html", user=current_user)
 
 
-@main.route("/user_dashboard")
+@main.route("/user-dashboard")
 @login_required
 def user_dashboard():
-    return render_template("user_dashboard.html", user=current_user)
 
+    # Skills selected by user
+    user_skills = current_user.user_skills
+
+    # Active goals
+    goals = Goal.query.filter_by(user_id=current_user.id, status="active").all()
+
+    # Data for charts
+    skill_names = []
+    target_hours = []
+    skill_labels = [us.skill.skill_name for us in user_skills]
+    skill_progress = [0 for _ in user_skills]
+
+    for g in goals:
+        skill_names.append(g.skill.skill_name)
+        target_hours.append(g.target_hours_per_week)
+
+    return render_template(
+        "user_dashboard.html",
+        user=current_user,
+        user_skills=user_skills,
+        goals=goals,
+        skill_names=skill_names,
+        target_hours=target_hours,
+        skill_labels=skill_labels,
+        skill_progress=skill_progress
+    )
 
 @main.route("/admin/add-category", methods=["GET", "POST"])
 def add_category():
@@ -80,12 +105,23 @@ def skill_setup():
         selected_skills = request.form.getlist("skills")
 
         for skill_id in selected_skills:
+
+            hours = request.form.get(f"hours_{skill_id}")
+
             new_skill = UserSkill(
                 user_id=current_user.id,
                 skill_id=skill_id
             )
 
             db.session.add(new_skill)
+
+            goal = Goal(
+                user_id=current_user.id,
+                skill_id=skill_id,
+                target_hours_per_week=hours
+            )
+
+            db.session.add(goal)
 
         db.session.commit()
 

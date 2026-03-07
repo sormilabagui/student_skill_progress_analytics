@@ -6,7 +6,7 @@
     <title>Document</title>
 </head>
 <body>
-    <h2>Select Your Skills</h2>
+    <h2>Select Your Skills & Weekly Goals</h2>
 
     <form method="POST">
 
@@ -19,6 +19,13 @@
         <input type="checkbox" name="skills" value="{{ skill.id }}">
         {{ skill.skill_name }} (Weight: {{ skill.weight }})
         <br>
+        <input type="number"
+                name="hours_{{ skill.id }}"
+                placeholder="Hours per week"
+                min="1"
+                max="40">
+
+        <br><br>
 
         {% endfor %}
 
@@ -26,7 +33,7 @@
 
         {% endfor %}
 
-        <button type="submit">Save Skills</button>
+        <button type="submit">Save Skills & Goals</button>
 
     </form>
 </body>

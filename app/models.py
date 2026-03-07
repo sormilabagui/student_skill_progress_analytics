@@ -51,3 +51,23 @@ class UserSkill(db.Model):
 
     user = db.relationship("User", backref="user_skills")
     skill = db.relationship("Skill")
+
+class Goal(db.Model):
+    __tablename__ = "goals"
+
+    goal_id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    skill_id = db.Column(db.Integer, db.ForeignKey("skills.id"), nullable=False)
+
+    target_hours_per_week = db.Column(db.Integer, nullable=False)
+
+    start_date = db.Column(db.Date)
+    end_date = db.Column(db.Date)
+
+    status = db.Column(db.String(20), default="active")
+
+    user = db.relationship("User", backref="goals")
+    skill = db.relationship("Skill")
+
+    
