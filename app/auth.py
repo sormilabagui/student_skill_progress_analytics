@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
-from .models import User
+from .models import User, UserSkill
 from . import db
 from flask import request, redirect, url_for
 from flask_login import login_user, logout_user
@@ -52,8 +52,15 @@ def login():
             return "Wrong password"
         
         login_user(user)
+        #admin always goes to admin dashboard
         if user.role == "admin":
             return redirect(url_for("main.admin_dashboard"))
+        
+        #check if user already selected skills
+        user_skills = UserSkill.query.filter_by(user_id=user.id).first()
+        
+        if not user_skills:
+            return redirect(url_for("main.skill_setup"))
         else:
             return redirect(url_for("main.user_dashboard"))
     

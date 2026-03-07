@@ -6,10 +6,12 @@
     <title>Dashboard</title>
 </head>
 <body>
-    <h2>User Dashboard</h2>
+    <h2>User Dashboard</h2><a href="{{ url_for('auth.logout') }}">Logout</a>
     <h1>Welcome {{ user.name }}</h1>
 
         <p>Email: {{ user.email }}</p>
     <p>Welcome to your skill tracker.</p>
+
+
 </body>
 </html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Select Your Skills</h2>
+
+    <form method="POST">
+
+        {% for category in categories %}
+
+        <h3>{{ category.name }}</h3>
+
+        {% for skill in category.skills %}
+
+        <input type="checkbox" name="skills" value="{{ skill.id }}">
+        {{ skill.skill_name }} (Weight: {{ skill.weight }})
+        <br>
+
+        {% endfor %}
+
+        <br>
+
+        {% endfor %}
+
+        <button type="submit">Save Skills</button>
+
+    </form>
+</body>
+</html>
