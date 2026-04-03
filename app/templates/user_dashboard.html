@@ -65,6 +65,7 @@
         <p>My Skills</p>
         <p>Progress</p>
         <p>Logout</p>
+        <a href="{{ url_for('main.add_progress') }}">Add Progress</a>
 
     </div>
 
@@ -85,8 +86,28 @@
                 <p>Active Goals</p>
             </div>
 
+            <div class="card">
+                <h3>{{ overall_performance }}%</h3>
+                <p>Overall Performance</p>
+            </div>
+
         </div>
 
+        <div class="section">
+            <h3>Performance Level</h3>
+
+            {% if overall_performance >= 70 %}
+            <p>🔥 Excellent Progress</p>
+
+            {% elif overall_performance >= 40 %}
+            <p>⚖️ Moderate Progress</p>
+
+            {% else %}
+            <p>🧊 Needs Improvement</p>
+
+            {% endif %}
+
+        </div>
 
         <div class="section">
 
@@ -117,6 +138,7 @@
 
                 <li>
                     {{ g.skill.skill_name }} - {{ g.target_hours_per_week }} hrs/week
+                    — {{ goal_progress[g.skill.skill_name] }} %
                 </li>
 
             {% endfor %}
@@ -125,11 +147,93 @@
 
         </div>
 
+
+
+        <div class="section">
+
+            <h3>Weak Skills</h3>
+
+            <ul>
+            {% for skill in weak_skills %}
+                <li>{{ skill }}</li>
+            {% endfor %}
+            </ul>
+
+        </div>
+
+
+        <div class="section">
+
+            <h3> Strong Skills</h3>
+
+            <ul>
+            {% for skill in strong_skills %}
+                <li>{{ skill }}</li>
+            {% endfor %}
+            </ul>
+
+        </div>
+
+
+        <div class="section">
+
+            <h3> Recommendations</h3>
+
+            <ul>
+            {% for r in recommendations %}
+                <li>{{ r }}</li>
+            {% endfor %}
+            </ul>
+
+        </div>
+
+        <div class="section">
+
+            <h3> High Priority Skills</h3>
+
+            <ul>
+            {% for skill in high_priority %}
+            <li>{{ skill }}</li>
+            {% endfor %}
+            </ul>
+
+            </div>
+
+
+            <div class="section">
+
+            <h3> Medium Priority Skills</h3>
+
+            <ul>
+            {% for skill in medium_priority %}
+            <li>{{ skill }}</li>
+            {% endfor %}
+            </ul>
+
+            </div>
+
+
+            <div class="section">
+
+            <h3> Low Priority Skills</h3>
+
+            <ul>
+            {% for skill in low_priority %}
+            <li>{{ skill }}</li>
+            {% endfor %}
+            </ul>
+
+            </div>
+
         <div style="display:flex; gap:40px; margin-top:30px;">
 
             <div style="width:50%;">
                 <h3>Weekly Target Hours</h3>
-                <canvas id="weeklyChart"></canvas>
+                <canvas 
+                id="weeklyChart"
+                data-labels='{{ skill_names | tojson }}'
+                data-data='{{ target_hours | tojson }}'>
+                </canvas>
             </div>
 
             <div style="width:50%;">
@@ -141,6 +245,15 @@
                 </canvas>
             </div>
 
+        </div>
+
+        <div style="width:50%; height: 300px;">
+            <h3>Category Performance</h3>
+            <canvas 
+                id="categoryChart"
+                data-labels='{{ category_labels | tojson }}'
+                data-values='{{ category_values | tojson }}'>
+            </canvas>
         </div>
 
 
