@@ -127,6 +127,46 @@ def user_dashboard():
     category_labels = list(category_data.keys())
     category_values = list(category_data.values())
 
+    # Daily Streak Calculation
+
+    progress_dates = db.session.query(
+        Progress.date
+    ).filter(
+        Progress.user_id == current_user.id
+    ).order_by(Progress.date.desc()).all()
+
+    unique_days = []
+
+    for p in progress_dates:
+        day = p.date.date()
+        if day not in unique_days:
+            unique_days.append(day)
+
+    streak = 0
+    longest_streak = 0
+    temp_streak = 0
+
+    today = date.today()
+
+    for i, day in enumerate(unique_days):
+
+        if i == 0:
+            if day == today or day == today - timedelta(days=1):
+                streak = 1
+                temp_streak = 1
+            else:
+                break
+
+        else:
+            if unique_days[i-1] - day == timedelta(days=1):
+                temp_streak += 1
+            else:
+                break
+
+        longest_streak = max(longest_streak, temp_streak)
+
+    last_active = unique_days[0] if unique_days else None
+
 
     return render_template(
         "user_dashboard.html",
@@ -147,6 +187,9 @@ def user_dashboard():
         overall_performance=overall_performance,
         category_labels=category_labels,
         category_values=category_values,
+        streak=streak,
+        longest_streak=longest_streak,
+        last_active=last_active,
     )
 
 @main.route("/admin/add-category", methods=["GET", "POST"])

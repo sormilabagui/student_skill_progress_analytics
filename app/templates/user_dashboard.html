@@ -93,6 +93,24 @@
 
         </div>
 
+
+
+        <div class="cards">
+        <div class="section">
+
+            <h3>Consistency Tracker</h3>
+
+            <p>🔥 Current Streak : {{ streak }} days</p>
+            <p>🏆 Longest Streak : {{ longest_streak }} days</p>
+
+            {% if last_active %}
+            <p>📅 Last Active : {{ last_active }}</p>
+            {% else %}
+            <p>📅 No activity yet</p>
+            {% endif %}
+
+        </div>
+
         <div class="section">
             <h3>Performance Level</h3>
 
@@ -146,9 +164,9 @@
             </ul>
 
         </div>
+        </div>
 
-
-
+        <div class="cards">
         <div class="section">
 
             <h3>Weak Skills</h3>
@@ -198,7 +216,7 @@
             </ul>
 
         </div>
-
+        
 
             <div class="section">
 
@@ -247,10 +265,11 @@
             <button onclick="stopTimer()">Stop</button>
 
         </div>
+        </div>
 
         <div style="display:flex; gap:40px; margin-top:30px;">
 
-            <div style="width:50%;">
+            <div style="width:30%;">
                 <h3>Weekly Target Hours</h3>
                 <canvas 
                 id="weeklyChart"
@@ -259,7 +278,7 @@
                 </canvas>
             </div>
 
-            <div style="width:50%;">
+            <div style="width:30%;">
                 <h3>Skill Distribution</h3>
                 <canvas 
                     id="skillChart"
@@ -268,16 +287,18 @@
                 </canvas>
             </div>
 
+            <div style="width:30%; height: 200px;">
+                <h3>Category Performance</h3>
+                <canvas 
+                    id="categoryChart"
+                    data-labels='{{ category_labels | tojson }}'
+                    data-values='{{ category_values | tojson }}'>
+                </canvas>
+            </div>
+
         </div>
 
-        <div style="width:50%; height: 300px;">
-            <h3>Category Performance</h3>
-            <canvas 
-                id="categoryChart"
-                data-labels='{{ category_labels | tojson }}'
-                data-values='{{ category_values | tojson }}'>
-            </canvas>
-        </div>
+        
 
 
     </div>
