@@ -197,7 +197,7 @@
             {% endfor %}
             </ul>
 
-            </div>
+        </div>
 
 
             <div class="section">
@@ -224,6 +224,29 @@
             </ul>
 
             </div>
+        
+
+        <div class="section">
+
+            <h3>Pomodoro Timer</h3>
+
+            <select id="skillSelect">
+                {% for us in user_skills %}
+                <option value="{{ us.skill.id }}">
+                    {{ us.skill.skill_name }}
+                </option>
+                {% endfor %}
+            </select>
+
+            <br><br>
+
+            <h2 id="timer">25:00</h2>
+
+            <button onclick="startTimer()">Start</button>
+            <button onclick="pauseTimer()" id="pauseBtn">Pause</button>
+            <button onclick="stopTimer()">Stop</button>
+
+        </div>
 
         <div style="display:flex; gap:40px; margin-top:30px;">
 

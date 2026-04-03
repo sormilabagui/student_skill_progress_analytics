@@ -1,8 +1,8 @@
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify
 from .models import SkillCategory, Skill, UserSkill, Goal, Progress
 from .extensions import db
 from flask_login import login_required, current_user
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 main = Blueprint('main', __name__)
 
@@ -252,3 +252,24 @@ def add_progress():
         return redirect(url_for("main.user_dashboard"))
 
     return render_template("add_progress.html", user_skills=user_skills)
+
+
+@main.route("/timer-progress", methods=["POST"])
+@login_required
+def timer_progress():
+
+    data = request.get_json()
+
+    skill_id = data.get("skill_id")
+    hours = data.get("hours")
+
+    progress = Progress(
+        user_id=current_user.id,
+        skill_id=skill_id,
+        hours_spent=hours
+    )
+
+    db.session.add(progress)
+    db.session.commit()
+
+    return {"status": "success"}
