@@ -66,6 +66,7 @@
         <p>Progress</p>
         <p>Logout</p>
         <a href="{{ url_for('main.add_progress') }}">Add Progress</a>
+        <a href="{{ url_for('main.manage_skills') }}">Manage Skills</a>
 
     </div>
 
@@ -91,11 +92,32 @@
                 <p>Overall Performance</p>
             </div>
 
+            <div class="card">
+                <h3>{{ productivity_score }}%</h3>
+                <p>Productivity Score</p>
+            </div>
+
         </div>
 
 
 
         <div class="cards">
+            <div class="section">
+
+                <h3>Productivity Level</h3>
+
+                {% if productivity_score >= 75 %}
+                <p>🚀 Highly Productive</p>
+
+                {% elif productivity_score >= 50 %}
+                <p>⚡ Moderate Productivity</p>
+
+                {% else %}
+                <p>🌱 Getting Started</p>
+
+                {% endif %}
+
+            </div>
         <div class="section">
 
             <h3>Consistency Tracker</h3>
@@ -295,6 +317,54 @@
                     data-values='{{ category_values | tojson }}'>
                 </canvas>
             </div>
+
+        </div>
+
+        <div class="section">
+
+            <h3>Recent Activity</h3>
+
+            <ul>
+
+            {% for activity in recent_activity %}
+
+            <li>
+            {{ activity.date.strftime("%d %b") }} —
+            {{ activity.skill.skill_name }} —
+            {{ (activity.hours_spent * 60)|round(0) }} mins
+            </li>
+
+            {% endfor %}
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+
+            <h3>Smart Recommendations</h3>
+
+            <ul>
+
+            {% for rec in smart_recommendations %}
+            <li>💡 {{ rec }}</li>
+            {% endfor %}
+
+            </ul>
+
+        </div>
+
+        <div class="section">
+
+            <h3>Download Report</h3>
+
+            <a href="{{ url_for('main.download_report',
+            overall=overall_performance,
+            productivity=productivity_score) }}">
+
+            <button>Download PDF Report</button>
+
+            </a>
 
         </div>
 

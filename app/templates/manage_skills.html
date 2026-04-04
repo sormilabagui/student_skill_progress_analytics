@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Skill Management</title>
+</head>
+
+<body>
+
+<h2>Manage Skills</h2>
+
+<a href="{{ url_for('main.skill_setup') }}">
+<button>Add New Skills</button>
+</a>
+
+<br><br>
+
+<table border="1" cellpadding="10">
+
+<tr>
+<th>Skill</th>
+<th>Category</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+
+{% for us in user_skills %}
+
+<tr>
+
+<td>{{ us.skill.skill_name }}</td>
+<td>{{ us.skill.category.name }}</td>
+
+<td>
+{% if us.is_active %}
+Active
+{% else %}
+Inactive
+{% endif %}
+</td>
+
+<td>
+
+<a href="{{ url_for('main.toggle_skill', id=us.id) }}">
+<button>Toggle</button>
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</body>
+</html>

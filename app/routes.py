@@ -1,8 +1,15 @@
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify, send_file
 from .models import SkillCategory, Skill, UserSkill, Goal, Progress
 from .extensions import db
 from flask_login import login_required, current_user
 from datetime import datetime, timedelta, date
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.enums import TA_LEFT
+import io
 
 main = Blueprint('main', __name__)
 
@@ -25,12 +32,21 @@ def user_dashboard():
     
 
     # Skills selected by user
-    user_skills = current_user.user_skills
+    user_skills = UserSkill.query.filter_by(
+        user_id=current_user.id,
+        is_active=True
+    ).all()
 
     # Active goals
-    goals = Goal.query.filter_by(
-        user_id=current_user.id,
-        status="active"
+    goals = Goal.query.filter(
+        Goal.user_id == current_user.id,
+        Goal.status == "active",
+        Goal.skill_id.in_(
+            db.session.query(UserSkill.skill_id).filter(
+                UserSkill.user_id == current_user.id,
+                UserSkill.is_active == True
+            )
+        )
     ).all()
 
     # Chart Data
@@ -167,6 +183,90 @@ def user_dashboard():
 
     last_active = unique_days[0] if unique_days else None
 
+    # Productivity Score
+
+    # Goal Score (40%)
+    goal_score = overall_performance * 0.4
+
+
+    # Consistency Score (30%)
+    consistency_score = min(streak * 10, 100) * 0.3
+
+
+    # Priority Score (30%)
+    priority_total = 0
+    priority_count = 0
+
+    for skill in high_priority:
+
+        if skill in goal_progress:
+            priority_total += goal_progress[skill]
+            priority_count += 1
+
+    priority_score = (priority_total / priority_count) if priority_count else 0
+    priority_score = priority_score * 0.3
+
+
+    productivity_score = round(
+        goal_score + consistency_score + priority_score, 2
+    )
+
+    # Recent Activity
+
+    recent_activity = Progress.query.filter_by(
+        user_id=current_user.id
+    ).order_by(
+        Progress.date.desc()
+    ).limit(5).all()
+
+    # Smart Recommendations
+
+    smart_recommendations = []
+
+    today = datetime.utcnow().date()
+
+    for us in user_skills:
+
+        last_progress = Progress.query.filter(
+            Progress.user_id == current_user.id,
+            Progress.skill_id == us.skill_id
+        ).order_by(
+            Progress.date.desc()
+        ).first()
+
+        if last_progress:
+
+            last_date = last_progress.date.date()
+            gap = (today - last_date).days
+
+            if gap >= 2:
+                smart_recommendations.append(
+                    f"You haven't practiced {us.skill.skill_name} for {gap} days"
+                )
+
+        else:
+            smart_recommendations.append(
+                f"Start working on {us.skill.skill_name}"
+            )
+
+    # Goal Based Smart Recommendations
+
+    for skill, progress in goal_progress.items():
+
+        if progress >= 80 and progress < 100:
+            smart_recommendations.append(
+                f"You're close to completing {skill} goal"
+            )
+
+        elif progress == 0:
+            smart_recommendations.append(
+                f"Start your weekly goal for {skill}"
+            )
+
+    if len(high_priority) > 0:
+        smart_recommendations.append(
+            "Focus on High Priority Skills first"
+        )    
 
     return render_template(
         "user_dashboard.html",
@@ -190,6 +290,9 @@ def user_dashboard():
         streak=streak,
         longest_streak=longest_streak,
         last_active=last_active,
+        productivity_score=productivity_score,
+        recent_activity=recent_activity,
+        smart_recommendations=smart_recommendations,
     )
 
 @main.route("/admin/add-category", methods=["GET", "POST"])
@@ -316,3 +419,153 @@ def timer_progress():
     db.session.commit()
 
     return {"status": "success"}
+
+#skills management
+@main.route("/skills")
+@login_required
+def manage_skills():
+
+    user_skills = current_user.user_skills
+
+    return render_template(
+        "manage_skills.html",
+        user_skills=user_skills
+    )
+
+@main.route("/toggle-skill/<int:id>")
+@login_required
+def toggle_skill(id):
+
+    skill = UserSkill.query.get(id)
+
+    skill.is_active = not skill.is_active
+
+    goal = Goal.query.filter_by(
+        user_id=current_user.id,
+        skill_id=skill.skill_id
+    ).first()
+
+    if goal:
+        goal.status = "active" if skill.is_active else "inactive"
+
+    db.session.commit()
+
+    return redirect(url_for("main.manage_skills"))
+
+
+@main.route("/download-report")
+@login_required
+def download_report():
+
+    buffer = io.BytesIO()
+
+    styles = getSampleStyleSheet()
+    story = []
+
+    # Title
+    story.append(Paragraph(
+        "<b>Student Skill Progress Report</b>",
+        styles["Heading1"]
+    ))
+
+    story.append(Spacer(1, 12))
+
+    # User Info
+    story.append(Paragraph(
+        f"User : {current_user.name}",
+        styles["Normal"]
+    ))
+
+    story.append(Paragraph(
+        f"Date : {datetime.utcnow().strftime('%d %B %Y')}",
+        styles["Normal"]
+    ))
+
+    story.append(Spacer(1, 12))
+
+    # Performance Section
+    story.append(Paragraph(
+        "<b>Performance Summary</b>",
+        styles["Heading2"]
+    ))
+
+    story.append(Spacer(1, 6))
+
+    story.append(Paragraph(
+        f"Overall Performance : {request.args.get('overall', '0')}%",
+        styles["Normal"]
+    ))
+
+    story.append(Paragraph(
+        f"Productivity Score : {request.args.get('productivity', '0')}%",
+        styles["Normal"]
+    ))
+
+    story.append(Spacer(1, 12))
+
+
+    # Skills Progress
+    story.append(Paragraph(
+        "<b>Skill Progress</b>",
+        styles["Heading2"]
+    ))
+
+    story.append(Spacer(1, 6))
+
+    user_skills = current_user.user_skills
+
+    for us in user_skills:
+
+        story.append(Paragraph(
+            f"{us.skill.skill_name}",
+            styles["Normal"]
+        ))
+
+    story.append(Spacer(1, 12))
+
+
+    # Recent Activity
+    story.append(Paragraph(
+        "<b>Recent Activity</b>",
+        styles["Heading2"]
+    ))
+
+    story.append(Spacer(1, 6))
+
+    recent = Progress.query.filter_by(
+        user_id=current_user.id
+    ).order_by(
+        Progress.date.desc()
+    ).limit(5).all()
+
+    for r in recent:
+
+        story.append(Paragraph(
+            f"{r.skill.skill_name} — {round(r.hours_spent*60)} mins",
+            styles["Normal"]
+        ))
+
+    story.append(Spacer(1, 12))
+
+
+    # Footer
+    story.append(Paragraph(
+        "Generated by Student Skill Progress Analytics System",
+        styles["Italic"]
+    ))
+
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4
+    )
+
+    doc.build(story)
+
+    buffer.seek(0)
+
+    return send_file(
+        buffer,
+        as_attachment=True,
+        download_name="Skill_Report.pdf",
+        mimetype="application/pdf"
+    )
