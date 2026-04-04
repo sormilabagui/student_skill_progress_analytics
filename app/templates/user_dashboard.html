@@ -22,6 +22,20 @@
             height:100vh;
             padding:20px;
         }
+        .sidebar a{
+            text-decoration:none;
+            color:white;
+        }
+
+        .sidebar p{
+            padding:10px;
+            border-radius:5px;
+        }
+
+        .sidebar p:hover{
+            background:#334155;
+            cursor:pointer;
+        }
 
         .content{
             flex:1;
@@ -49,6 +63,28 @@
             margin-bottom:20px;
             border-radius:8px;
         }
+        .timer-card{
+            text-align:center;
+            padding:20px;
+
+            }
+
+            .start-btn{
+
+            padding:12px 20px;
+            background:#2563eb;
+            color:white;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+
+            }
+
+            .start-btn:hover{
+
+            background:#1e40af;
+
+            }
 
     </style>
 </head>
@@ -61,12 +97,31 @@
 
         <h2>Skill Tracker</h2>
 
-        <p>Dashboard</p>
+        <!--<p>Dashboard</p>
         <p>My Skills</p>
         <p>Progress</p>
         <p>Logout</p>
         <a href="{{ url_for('main.add_progress') }}">Add Progress</a>
-        <a href="{{ url_for('main.manage_skills') }}">Manage Skills</a>
+        <a href="{{ url_for('main.manage_skills') }}">Manage Skills</a>-->
+        <h2>Skill Tracker</h2>
+
+        <br>
+
+        <a href="{{ url_for('main.user_dashboard') }}">
+        <p>📊 Dashboard</p>
+        </a>
+
+        <a href="{{ url_for('main.manage_skills') }}">
+        <p>🛠️ Manage Skills</p>
+        </a>
+
+        <a href="{{ url_for('main.pomodoro') }}">
+        <p>⏱️ Pomodoro Timer</p>
+        </a>
+
+        <a href="{{ url_for('main.add_progress') }}">
+        <p>➕ Add Progress</p>
+        </a>
 
     </div>
 
@@ -266,25 +321,16 @@
             </div>
         
 
-        <div class="section">
+        <div class="card timer-card">
 
             <h3>Pomodoro Timer</h3>
+                <p>Stay focused with 25 min sessions</p>
 
-            <select id="skillSelect">
-                {% for us in user_skills %}
-                <option value="{{ us.skill.id }}">
-                    {{ us.skill.skill_name }}
-                </option>
-                {% endfor %}
-            </select>
-
-            <br><br>
-
-            <h2 id="timer">25:00</h2>
-
-            <button onclick="startTimer()">Start</button>
-            <button onclick="pauseTimer()" id="pauseBtn">Pause</button>
-            <button onclick="stopTimer()">Stop</button>
+                <a href="{{ url_for('main.pomodoro') }}">
+                <button class="start-btn">
+                Let's Start
+                </button>
+                </a>
 
         </div>
         </div>

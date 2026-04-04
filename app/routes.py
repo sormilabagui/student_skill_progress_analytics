@@ -569,3 +569,39 @@ def download_report():
         download_name="Skill_Report.pdf",
         mimetype="application/pdf"
     )
+
+@main.route("/pomodoro")
+@login_required
+def pomodoro():
+
+    user_skills = UserSkill.query.filter_by(
+        user_id=current_user.id,
+        is_active=True
+    ).all()
+
+    return render_template(
+        "pomodoro.html",
+        user_skills=user_skills
+    )
+
+@main.route("/save-pomodoro", methods=["POST"])
+@login_required
+def save_pomodoro():
+
+    data = request.get_json()
+
+    skill_id = data.get("skill_id")
+    minutes = data.get("minutes")
+
+    hours = minutes / 60
+
+    progress = Progress(
+        user_id=current_user.id,
+        skill_id=skill_id,
+        hours_spent=hours
+    )
+
+    db.session.add(progress)
+    db.session.commit()
+
+    return jsonify({"status":"success"})
