@@ -14,6 +14,10 @@
 
 <br><br>
 
+{% if user_skills|length == 0 %}
+<p>No skills added yet</p>
+{% endif %}
+
 <table border="1" cellpadding="10">
 
 <tr>
@@ -25,10 +29,19 @@
 
 {% for us in user_skills %}
 
+{% if us.skill %}
+
 <tr>
 
 <td>{{ us.skill.skill_name }}</td>
-<td>{{ us.skill.category.name }}</td>
+
+<td>
+{% if us.skill.category %}
+{{ us.skill.category.name }}
+{% else %}
+No Category
+{% endif %}
+</td>
 
 <td>
 {% if us.is_active %}
@@ -47,6 +60,8 @@ Inactive
 </td>
 
 </tr>
+
+{% endif %}
 
 {% endfor %}
 

@@ -114,8 +114,24 @@
         <p> Manage Skills</p>
         </a>
 
+        <a href="{{ url_for('main.goals_progress') }}">
+        <p>🎯 Goals & Progress</p>
+        </a>
+
+        <a href="{{ url_for('main.analytics') }}">
+        <p> Analytics</p>
+        </a>
+
+        <a href="{{ url_for('main.productivity') }}">
+        <p>⏱ Productivity</p>
+        </a>
+
         <a href="{{ url_for('main.pomodoro') }}">
         <p> Pomodoro Timer</p>
+        </a>
+
+        <a href="{{ url_for('main.reports') }}">
+        <p>📄 Reports</p>
         </a>
 
         <a href="{{ url_for('main.add_progress') }}">
@@ -129,296 +145,129 @@
 
     <div class="content">
 
-        <h2>Hello {{ user.name }}</h2>
+        <h2>Hello {{ user.name }} 👋</h2>
 
         <div class="cards">
 
-            <div class="card">
-                <h3>{{ user_skills|length }}</h3>
-                <p>Total Skills</p>
-            </div>
-
-            <div class="card">
-                <h3>{{ goals|length }}</h3>
-                <p>Active Goals</p>
-            </div>
-
-            <div class="card">
-                <h3>{{ overall_performance }}%</h3>
-                <p>Overall Performance</p>
-            </div>
-
-            <div class="card">
-                <h3>{{ productivity_score }}%</h3>
-                <p>Productivity Score</p>
-            </div>
-
+        <div class="card">
+        <h3>{{ user_skills|length }}</h3>
+        <p>Total Skills</p>
         </div>
 
-
-
-        <div class="cards">
-            <div class="section">
-
-                <h3>Productivity Level</h3>
-
-                {% if productivity_score >= 75 %}
-                <p>🚀 Highly Productive</p>
-
-                {% elif productivity_score >= 50 %}
-                <p>⚡ Moderate Productivity</p>
-
-                {% else %}
-                <p>🌱 Getting Started</p>
-
-                {% endif %}
-
-            </div>
-        <div class="section">
-
-            <h3>Consistency Tracker</h3>
-
-            <p>🔥 Current Streak : {{ streak }} days</p>
-            <p>🏆 Longest Streak : {{ longest_streak }} days</p>
-
-            {% if last_active %}
-            <p>📅 Last Active : {{ last_active }}</p>
-            {% else %}
-            <p>📅 No activity yet</p>
-            {% endif %}
-
+        <div class="card">
+        <h3>{{ goals|length }}</h3>
+        <p>Active Goals</p>
         </div>
 
-        <div class="section">
-            <h3>Performance Level</h3>
-
-            {% if overall_performance >= 70 %}
-            <p>🔥 Excellent Progress</p>
-
-            {% elif overall_performance >= 40 %}
-            <p>⚖️ Moderate Progress</p>
-
-            {% else %}
-            <p>🧊 Needs Improvement</p>
-
-            {% endif %}
-
+        <div class="card">
+        <h3>{{ overall_performance }}%</h3>
+        <p>Overall Performance</p>
         </div>
 
-        <div class="section">
-
-            <h3>Your Skills</h3>
-
-            <ul>
-
-            {% for us in user_skills %}
-
-                <li>
-                    {{ us.skill.skill_name }}
-                </li>
-
-            {% endfor %}
-
-            </ul>
-
+        <div class="card">
+        <h3>{{ productivity_score }}%</h3>
+        <p>Productivity Score</p>
         </div>
 
-
-        <div class="section">
-
-            <h3>Your Goals</h3>
-
-            <ul>
-
-            {% for g in goals %}
-
-                <li>
-                    {{ g.skill.skill_name }} - {{ g.target_hours_per_week }} hrs/week
-                    — {{ goal_progress[g.skill.skill_name] }} %
-                </li>
-
-            {% endfor %}
-
-            </ul>
-
-        </div>
         </div>
 
         <div class="cards">
-        <div class="section">
-
-            <h3>Weak Skills</h3>
-
-            <ul>
-            {% for skill in weak_skills %}
-                <li>{{ skill }}</li>
-            {% endfor %}
-            </ul>
-
-        </div>
-
 
         <div class="section">
 
-            <h3> Strong Skills</h3>
+        <h3>Productivity Level</h3>
 
-            <ul>
-            {% for skill in strong_skills %}
-                <li>{{ skill }}</li>
-            {% endfor %}
-            </ul>
+        {% if productivity_score >= 75 %}
 
-        </div>
+        <p>🚀 Highly Productive</p>
 
+        {% elif productivity_score >= 50 %}
 
-        <div class="section">
+        <p>⚡ Moderate Productivity</p>
 
-            <h3> Recommendations</h3>
+        {% else %}
 
-            <ul>
-            {% for r in recommendations %}
-                <li>{{ r }}</li>
-            {% endfor %}
-            </ul>
+        <p>🌱 Getting Started</p>
+
+        {% endif %}
 
         </div>
 
         <div class="section">
 
-            <h3> High Priority Skills</h3>
+        <h3>Consistency Tracker</h3>
 
-            <ul>
-            {% for skill in high_priority %}
-            <li>{{ skill }}</li>
-            {% endfor %}
-            </ul>
+        <p>🔥 Current Streak : {{ streak }} days</p>
+        <p>🏆 Longest Streak : {{ longest_streak }} days</p>
 
-        </div>
-        
+        {% if last_active %}
 
-            <div class="section">
-
-            <h3> Medium Priority Skills</h3>
-
-            <ul>
-            {% for skill in medium_priority %}
-            <li>{{ skill }}</li>
-            {% endfor %}
-            </ul>
-
-            </div>
-
-
-            <div class="section">
-
-            <h3> Low Priority Skills</h3>
-
-            <ul>
-            {% for skill in low_priority %}
-            <li>{{ skill }}</li>
-            {% endfor %}
-            </ul>
-
-            </div>
-        
-
-        <div class="card timer-card">
-
-            <h3>Pomodoro Timer</h3>
-                <p>Stay focused with 25 min sessions</p>
-
-                <a href="{{ url_for('main.pomodoro') }}">
-                <button class="start-btn">
-                Let's Start
-                </button>
-                </a>
-
-        </div>
-        </div>
-
-        <div style="display:flex; gap:40px; margin-top:30px;">
-
-            <div style="width:30%;">
-                <h3>Weekly Target Hours</h3>
-                <canvas 
-                id="weeklyChart"
-                data-labels='{{ skill_names | tojson }}'
-                data-data='{{ target_hours | tojson }}'>
-                </canvas>
-            </div>
-
-            <div style="width:30%;">
-                <h3>Skill Distribution</h3>
-                <canvas 
-                    id="skillChart"
-                    data-labels='{{ skill_labels | tojson }}'
-                    data-progress='{{ skill_progress | tojson }}'>
-                </canvas>
-            </div>
-
-            <div style="width:30%; height: 200px;">
-                <h3>Category Performance</h3>
-                <canvas 
-                    id="categoryChart"
-                    data-labels='{{ category_labels | tojson }}'
-                    data-values='{{ category_values | tojson }}'>
-                </canvas>
-            </div>
+        <p>📅 Last Active : {{ last_active }}</p>
+        {% else %}
+        <p>📅 No activity yet</p>
+        {% endif %}
 
         </div>
 
         <div class="section">
 
-            <h3>Recent Activity</h3>
+        <h3>Performance Level</h3>
 
-            <ul>
+        {% if overall_performance >= 70 %}
 
-            {% for activity in recent_activity %}
+        <p>🔥 Excellent Progress</p>
 
-            <li>
-            {{ activity.date.strftime("%d %b") }} —
-            {{ activity.skill.skill_name }} —
-            {{ (activity.hours_spent * 60)|round(0) }} mins
-            </li>
+        {% elif overall_performance >= 40 %}
 
-            {% endfor %}
+        <p>⚖️ Moderate Progress</p>
 
-            </ul>
+        {% else %}
+
+        <p>🧊 Needs Improvement</p>
+
+        {% endif %}
+
+        </div>
+
+        </div>
+        <div class="cards">
+        <div class="section">
+
+        <h3>Recent Activity</h3>
+
+        <ul>
+
+        {% for activity in recent_activity %}
+
+        <li>
+        {{ activity.date.strftime("%d %b") }} —
+        {{ activity.skill.skill_name }} —
+        {{ (activity.hours_spent * 60)|round(0) }} mins
+        </li>
+
+        {% endfor %}
+
+        </ul>
 
         </div>
 
         <div class="section">
 
-            <h3>Smart Recommendations</h3>
+        <h3>Smart Recommendations</h3>
 
-            <ul>
+        <ul>
 
-            {% for rec in smart_recommendations %}
-            <li>💡 {{ rec }}</li>
-            {% endfor %}
+        {% for rec in smart_recommendations %}
 
-            </ul>
+        <li>💡 {{ rec }}</li>
+        {% endfor %}
 
-        </div>
-
-        <div class="section">
-
-            <h3>Download Report</h3>
-
-            <a href="{{ url_for('main.download_report',
-            overall=overall_performance,
-            productivity=productivity_score) }}">
-
-            <button>Download PDF Report</button>
-
-            </a>
+        </ul></div>
 
         </div>
-
-        
-
 
     </div>
+
 
 </div>
 

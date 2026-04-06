@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Analytics</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+}
+
+.container{
+display:flex;
+}
+
+.sidebar{
+width:220px;
+background:#1e293b;
+color:white;
+height:100vh;
+padding:20px;
+}
+
+.sidebar a{
+text-decoration:none;
+color:white;
+}
+
+.sidebar p{
+padding:10px;
+border-radius:5px;
+}
+
+.sidebar p:hover{
+background:#334155;
+cursor:pointer;
+}
+
+.content{
+flex:1;
+padding:30px;
+background:#f5f7fa;
+}
+
+.chart-container{
+display:flex;
+gap:30px;
+margin-bottom:30px;
+flex-wrap: wrap;
+}
+
+.chart-box{
+background:white;
+padding:20px;
+border-radius:8px;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+width:27%;
+height: 350px;
+}
+
+.chart-box canvas{
+height:280px !important;
+}
+
+.section{
+background:white;
+padding:20px;
+border-radius:8px;
+margin-top:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h2>Skill Tracker</h2>
+
+<a href="{{ url_for('main.user_dashboard') }}">
+<p>🏠 Dashboard</p>
+</a>
+
+<a href="{{ url_for('main.manage_skills') }}">
+<p>🧠 My Skills</p>
+</a>
+
+<a href="{{ url_for('main.goals_progress') }}">
+<p>🎯 Goals & Progress</p>
+</a>
+
+<a href="{{ url_for('main.analytics') }}">
+<p>📊 Analytics</p>
+</a>
+
+<a href="{{ url_for('main.productivity') }}">
+<p>⏱ Productivity</p>
+</a>
+
+<a href="{{ url_for('main.pomodoro') }}">
+<p>🍅 Pomodoro</p>
+</a>
+
+<a href="{{ url_for('main.reports') }}">
+<p>📄 Reports</p>
+</a>
+
+<a href="{{ url_for('auth.logout') }}">
+<p>🚪 Logout</p>
+</a>
+
+</div>
+
+<div class="content">
+
+<h2>📊 Skill Analytics</h2>
+
+<div class="chart-container">
+
+<div class="chart-box">
+
+<h3>Weekly Target Hours</h3>
+
+<canvas 
+id="weeklyChart"
+data-labels='{{ skill_names | tojson }}'
+data-data='{{ target_hours | tojson }}'> </canvas>
+
+</div>
+
+<div class="chart-box">
+
+<h3>Skill Distribution</h3>
+
+<canvas 
+id="skillChart"
+data-labels='{{ skill_labels | tojson }}'
+data-progress='{{ skill_progress | tojson }}'> </canvas>
+
+</div>
+
+<div class="chart-box" height="300px">
+
+<h3>Category Performance</h3>
+
+<canvas 
+id="categoryChart"
+data-labels='{{ category_labels | tojson }}'
+data-values='{{ category_values | tojson }}'> </canvas>
+
+</div>
+
+</div>
+
+<div class="section">
+
+<h3>Analytics Insights</h3>
+
+<ul>
+
+<li>📈 Track weekly learning targets</li>
+<li>🎯 Monitor skill performance</li>
+<li>📊 Analyze category strengths</li>
+<li>🚀 Improve learning efficiency</li>
+
+</ul>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/user_dashboard.js') }}"></script>
+
+</body>
+</html>

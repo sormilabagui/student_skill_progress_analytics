@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>Productivity</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+}
+
+.container{
+display:flex;
+}
+
+.sidebar{
+width:220px;
+background:#1e293b;
+color:white;
+height:100vh;
+padding:20px;
+}
+
+.sidebar a{
+text-decoration:none;
+color:white;
+}
+
+.sidebar p{
+padding:10px;
+border-radius:5px;
+}
+
+.sidebar p:hover{
+background:#334155;
+cursor:pointer;
+}
+
+.content{
+flex:1;
+padding:30px;
+background:#f5f7fa;
+}
+
+.cards{
+display:flex;
+gap:20px;
+margin-bottom:30px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:8px;
+width:25%;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+
+.section{
+background:white;
+padding:20px;
+border-radius:8px;
+margin-top:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h2>Skill Tracker</h2>
+
+<a href="{{ url_for('main.user_dashboard') }}">
+<p>🏠 Dashboard</p>
+</a>
+
+<a href="{{ url_for('main.manage_skills') }}">
+<p>🧠 My Skills</p>
+</a>
+
+<a href="{{ url_for('main.goals_progress') }}">
+<p>🎯 Goals & Progress</p>
+</a>
+
+<a href="{{ url_for('main.analytics') }}">
+<p>📊 Analytics</p>
+</a>
+
+<a href="{{ url_for('main.productivity') }}">
+<p>⏱ Productivity</p>
+</a>
+
+<a href="{{ url_for('main.pomodoro') }}">
+<p>🍅 Pomodoro</p>
+</a>
+
+<a href="{{ url_for('main.reports') }}">
+<p>📄 Reports</p>
+</a>
+
+<a href="{{ url_for('auth.logout') }}">
+<p>🚪 Logout</p>
+</a>
+
+</div>
+
+<div class="content">
+
+<h2>⏱ Productivity Insights</h2>
+
+<div class="cards">
+
+<div class="card">
+<h3>Total Hours</h3>
+<h2>{{ total_hours }}</h2>
+</div>
+
+<div class="card">
+<h3>This Week</h3>
+<h2>{{ weekly_hours }}</h2>
+</div>
+
+<div class="card">
+<h3>Most Active Skill</h3>
+<h2>{{ top_skill }}</h2>
+</div>
+
+<div class="card">
+<h3>Productivity Score</h3>
+<h2>{{ productivity_score }}%</h2>
+</div>
+
+</div>
+
+<div class="section">
+
+<h3>Study Insights</h3>
+
+<ul>
+
+<li>📈 Total learning time tracked</li>
+<li>🎯 Weekly productivity measurement</li>
+<li>🔥 Most active learning skill</li>
+<li>⚡ Performance efficiency score</li>
+
+</ul>
+
+</div>
+
+<div class="section">
+
+<h3>Suggestions</h3>
+
+<ul>
+
+{% for s in suggestions %}
+
+<li>💡 {{ s }}</li>
+{% endfor %}
+
+</ul>
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>
