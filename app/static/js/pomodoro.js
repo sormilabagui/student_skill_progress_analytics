@@ -8,6 +8,18 @@ let pausedTime = 0;
 
 const timerDisplay = document.getElementById("timer");
 
+let todaySessions = 0;
+let todayMinutes = 0;
+
+const todaySessionsDisplay =
+document.getElementById("todaySessions");
+
+const todayHoursDisplay =
+document.getElementById("todayHours");
+
+const motivationText =
+document.getElementById("motivationText");
+
 function updateDisplay() {
 
 let minutes = Math.floor(time / 60);
@@ -115,6 +127,19 @@ let minutes = diff / 60;
 
 if(minutes < 0.5) return; // ignore very small sessions
 
+todaySessions++;
+
+todayMinutes += minutes;
+
+todaySessionsDisplay.innerText =
+"Today's Sessions: " + todaySessions;
+
+todayHoursDisplay.innerText =
+"Today's Focus: " +
+(todayMinutes/60).toFixed(2) + " hrs";
+
+updateMotivation();
+
 let skill = document.getElementById("skillSelect").value;
 
 fetch("/save-pomodoro", {
@@ -152,3 +177,46 @@ e.returnValue = '';
 });
 
 updateDisplay();
+
+const focusBtn = document.getElementById("focusModeBtn");
+const exitFocusBtn = document.getElementById("exitFocusBtn");
+
+focusBtn.onclick = function(){
+
+document.body.classList.add("focus-mode");
+
+focusBtn.style.display = "none";
+exitFocusBtn.style.display = "inline-block";
+
+}
+
+exitFocusBtn.onclick = function(){
+
+document.body.classList.remove("focus-mode");
+
+focusBtn.style.display = "inline-block";
+exitFocusBtn.style.display = "none";
+
+}
+
+const motivationMessages = [
+
+"Stay focused. You're building your future.",
+"Small progress daily leads to big success.",
+"One session closer to your dream job.",
+"Consistency beats motivation.",
+"Your future self will thank you.",
+"Discipline creates success."
+
+];
+
+function updateMotivation(){
+
+let random =
+Math.floor(Math.random() *
+motivationMessages.length);
+
+motivationText.innerText =
+motivationMessages[random];
+
+}

@@ -103,25 +103,26 @@
         <p>Logout</p>
         <a href="{{ url_for('main.add_progress') }}">Add Progress</a>
         <a href="{{ url_for('main.manage_skills') }}">Manage Skills</a>-->
-        <h2>Skill Tracker</h2>
 
         <br>
 
         <a href="{{ url_for('main.user_dashboard') }}">
-        <p>📊 Dashboard</p>
+        <p> Dashboard</p>
         </a>
 
         <a href="{{ url_for('main.manage_skills') }}">
-        <p>🛠️ Manage Skills</p>
+        <p> Manage Skills</p>
         </a>
 
         <a href="{{ url_for('main.pomodoro') }}">
-        <p>⏱️ Pomodoro Timer</p>
+        <p> Pomodoro Timer</p>
         </a>
 
         <a href="{{ url_for('main.add_progress') }}">
-        <p>➕ Add Progress</p>
+        <p> Add Progress</p>
         </a>
+
+        <a href="{{ url_for('auth.logout') }}"><p>Logout</p></a>
 
     </div>
 

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Profile</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+}
+
+.container{
+display:flex;
+}
+
+.sidebar{
+width:220px;
+background:#1e293b;
+color:white;
+height:100vh;
+padding:20px;
+}
+
+.sidebar a{
+text-decoration:none;
+color:white;
+}
+
+.sidebar p{
+padding:10px;
+border-radius:5px;
+}
+
+.sidebar p:hover{
+background:#334155;
+cursor:pointer;
+}
+
+.content{
+flex:1;
+padding:30px;
+background:#f5f7fa;
+}
+
+.section{
+background:white;
+padding:25px;
+border-radius:8px;
+width:450px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-bottom:15px;
+}
+
+button{
+padding:10px 18px;
+background:#2563eb;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#1e40af;
+}
+.flash{
+background:#16a34a;
+color:white;
+padding:10px;
+margin-bottom:15px;
+border-radius:6px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="sidebar">
+
+<h2>Skill Tracker</h2>
+
+<a href="{{ url_for('main.admin_dashboard') }}">
+<p>Dashboard</p>
+</a>
+
+<a href="/admin/manage-category">
+<p>Manage Categories</p>
+</a>
+
+<a href="/admin/manage-skill">
+<p>Manage Skills</p>
+</a>
+
+<a href="/admin/users">
+<p>User Management</p>
+</a>
+
+<a href="/admin/profile">
+<p>Admin Profile</p>
+</a>
+
+<a href="{{ url_for('auth.logout') }}">
+<p>Logout</p>
+</a>
+
+</div>
+
+<div class="content">
+
+<div class="section">
+
+<h2>Admin Profile</h2>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+
+<div class="flash">
+
+{% for message in messages %}
+<p>{{ message }}</p>
+{% endfor %}
+
+</div>
+
+{% endif %}
+{% endwith %}
+<form method="POST">
+
+<label>Name</label>
+
+<input
+type="text"
+name="name"
+value="{{ user.name }}"
+required>
+
+<label>Email</label>
+
+<input
+type="email"
+name="email"
+value="{{ user.email }}"
+required>
+
+<button type="submit">
+Update Profile
+</button>
+
+</form>
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>

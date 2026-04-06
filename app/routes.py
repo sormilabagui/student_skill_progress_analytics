@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify, send_file
-from .models import SkillCategory, Skill, UserSkill, Goal, Progress
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify, send_file, flash
+from .models import SkillCategory, Skill, UserSkill, Goal, Progress, User
 from .extensions import db
 from flask_login import login_required, current_user
 from datetime import datetime, timedelta, date
@@ -20,12 +20,215 @@ def home():
 
 
 
-@main.route("/admin_dashboard")
+@main.route("/admin/dashboard")
 @login_required
 def admin_dashboard():
-    return render_template("admin_dashboard.html", user=current_user)
+
+    categories = SkillCategory.query.all()
+    skills = Skill.query.all()
+    users = User.query.all()
+
+    total_users = len(users)
+    total_categories = len(categories)
+    total_skills = len(skills)
+
+    recent_users = User.query.order_by(User.id.desc()).limit(5).all()
+
+    return render_template(
+        "admin_dashboard.html",
+        user=current_user,
+        total_users=total_users,
+        total_categories=total_categories,
+        total_skills=total_skills,
+        recent_users=recent_users,
+        categories=categories,
+        skills=skills
+    )
+
+#manage category
+@main.route("/admin/manage-category", methods=["GET","POST"])
+@login_required
+def manage_category():
+
+    if request.method == "POST":
+
+        name = request.form["name"]
+        description = request.form["description"]
+
+        category = SkillCategory(
+            name=name,
+            description=description
+        )
+
+        db.session.add(category)
+        db.session.commit()
+
+        return redirect(url_for("main.manage_category"))
+
+    categories = SkillCategory.query.all()
+
+    return render_template(
+        "manage_categories.html",
+        categories=categories,
+        user=current_user
+    )
+
+@main.route("/admin/delete-category/<int:id>")
+@login_required
+def delete_category(id):
+
+    category = SkillCategory.query.get(id)
+
+    db.session.delete(category)
+    db.session.commit()
+
+    return redirect(url_for("main.manage_category"))
+
+@main.route("/admin/edit-category/<int:id>", methods=["GET","POST"])
+@login_required
+def edit_category(id):
+
+    category = SkillCategory.query.get(id)
+
+    if request.method == "POST":
+
+        category.name = request.form["name"]
+        category.description = request.form["description"]
+
+        db.session.commit()
+
+        return redirect(url_for("main.manage_category"))
+
+    return render_template(
+        "edit_category.html",
+        category=category
+    )
+
+@main.route("/admin/manage-skill", methods=["GET","POST"])
+@login_required
+def manage_skill():
+
+    if request.method == "POST":
+
+        skill_name = request.form["skill_name"]
+        category_id = request.form["category_id"]
+        weight = request.form["weight"]
+
+        skill = Skill(
+            skill_name=skill_name,
+            category_id=category_id,
+            weight=weight
+        )
+
+        db.session.add(skill)
+        db.session.commit()
+
+        return redirect(url_for("main.manage_skill"))
+
+    skills = Skill.query.all()
+    categories = SkillCategory.query.all()
+
+    return render_template(
+        "manage_admin_skills.html",
+        skills=skills,
+        categories=categories,
+        user=current_user
+    )
+
+@main.route("/admin/delete-skill/<int:id>")
+@login_required
+def delete_skill(id):
+
+    skill = Skill.query.get(id)
+
+    db.session.delete(skill)
+    db.session.commit()
+
+    return redirect(url_for("main.manage_skill"))
+
+@main.route("/admin/edit-skill/<int:id>", methods=["GET","POST"])
+@login_required
+def edit_skill(id):
+
+    skill = Skill.query.get(id)
+    categories = SkillCategory.query.all()
+
+    if request.method == "POST":
+
+        skill.skill_name = request.form["skill_name"]
+        skill.category_id = request.form["category_id"]
+        skill.weight = request.form["weight"]
+
+        db.session.commit()
+
+        return redirect(url_for("main.manage_skill"))
+
+    return render_template(
+        "edit_skill.html",
+        skill=skill,
+        categories=categories
+    )
+
+@main.route("/admin/users")
+@login_required
+def admin_users():
+
+    users = User.query.all()
+
+    return render_template(
+        "admin_users.html",
+        users=users,
+        user=current_user
+    )
+
+@main.route("/admin/user/<int:id>")
+@login_required
+def admin_user_detail(id):
+
+    user = User.query.get(id)
+
+    user_skills = UserSkill.query.filter_by(
+        user_id=id
+    ).all()
+
+    progress = Progress.query.filter_by(
+        user_id=id
+    ).order_by(Progress.id.desc()).limit(10).all()
+
+    total_hours = db.session.query(
+        db.func.sum(Progress.hours_spent)
+    ).filter_by(user_id=id).scalar() or 0
+
+    return render_template(
+        "admin_user_detail.html",
+        user=user,
+        user_skills=user_skills,
+        progress=progress,
+        total_hours=round(total_hours,2)
+    )
+
+@main.route("/admin/profile", methods=["GET","POST"])
+@login_required
+def admin_profile():
+
+    user = current_user
+
+    if request.method == "POST":
+
+        user.name = request.form.get("name")
+        user.email = request.form.get("email")
+
+        db.session.commit()
+
+        flash("Profile Updated Successfully")
+
+    return render_template(
+        "admin_profile.html",
+        user=user
+    )
 
 
+#user side backend
 @main.route("/user-dashboard")
 @login_required
 def user_dashboard():

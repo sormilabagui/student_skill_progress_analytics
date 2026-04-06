@@ -4,7 +4,7 @@
 
 <title>Pomodoro Timer</title>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
 
 </head>
 
@@ -23,9 +23,18 @@
 </div>
 
 <div class="main">
+<div class="focus-stats">
 
+<h3 id="todaySessions">Today's Sessions: 0</h3>
+<h3 id="todayHours">Today's Focus: 0 hrs</h3>
+
+<p id="motivationText">
+Stay focused. You're building your future.
+</p>
+
+</div>
 <h2>Focus Timer</h2>
-
+<button id="focusModeBtn">Enter Focus Mode</button>
 <select id="skillSelect">
 
 {% for us in user_skills %}
@@ -43,7 +52,7 @@
 <h1 id="timer">25:00</h1>
 
 </div>
-
+<button id="exitFocusBtn" style="display:none;">Exit Focus Mode</button>
 <div class="buttons">
 
 <button id="start">Start</button>
