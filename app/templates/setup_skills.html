@@ -1,40 +1,105 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Setup Skills</title>
+
+<link rel="stylesheet"
+href="{{ url_for('static', filename='css/admin_dashboard.css') }}">
+
 </head>
+
 <body>
-    <h2>Select Your Skills & Weekly Goals</h2>
 
-    <form method="POST">
+<div class="container">
 
-        {% for category in categories %}
+<!-- Sidebar -->
 
-        <h3>{{ category.name }}</h3>
+<div class="sidebar">
 
-        {% for skill in category.skills %}
+<h2>Skill Tracker</h2>
 
-        <input type="checkbox" name="skills" value="{{ skill.id }}">
-        {{ skill.skill_name }} (Weight: {{ skill.weight }})
-        <br>
-        <input type="number"
-                name="hours_{{ skill.id }}"
-                placeholder="Hours per week"
-                min="1"
-                max="40">
+<p>Welcome {{ current_user.name }}</p>
 
-        <br><br>
+</div>
 
-        {% endfor %}
 
-        <br>
+<!-- Main Content -->
 
-        {% endfor %}
+<div class="main">
 
-        <button type="submit">Save Skills & Goals</button>
+<h2>Select Your Skills & Weekly Goals</h2>
 
-    </form>
+<form method="POST">
+
+{% for category in categories %}
+
+<div class="card1">
+
+<h3>{{ category.name }}</h3>
+
+{% for skill in category.skills %}
+
+<div class="skill-row">
+
+<div class="skill-left">
+
+<input 
+type="checkbox" 
+name="skills" 
+value="{{ skill.id }}"
+>
+
+<label>
+{{ skill.skill_name }}
+</label>
+
+<span class="weight">
+Weight: {{ skill.weight }}
+</span>
+
+</div>
+
+<div class="skill-right">
+
+<input 
+type="number"
+name="hours_{{ skill.id }}"
+placeholder="Hours / week"
+min="1"
+max="40"
+>
+
+<select name="priority_{{ skill.id }}">
+
+<option value="High">High</option>
+<option value="Medium" selected>Medium</option>
+<option value="Low">Low</option>
+
+</select>
+
+</div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+{% endfor %}
+
+<button class="primary-btn">
+Save Skills & Goals
+</button>
+
+</form>
+
+</div>
+
+</div>
+
 </body>
 </html>

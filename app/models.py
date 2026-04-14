@@ -62,6 +62,9 @@ class Goal(db.Model):
 
     target_hours_per_week = db.Column(db.Integer, nullable=False)
 
+    # NEW FIELD
+    priority = db.Column(db.String(10),default="Medium")
+    
     start_date = db.Column(db.Date)
     end_date = db.Column(db.Date)
 
@@ -72,14 +75,166 @@ class Goal(db.Model):
 
 class Progress(db.Model):
     __tablename__ = "progress"
+
     id = db.Column(db.Integer, primary_key=True)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    skill_id = db.Column(db.Integer, db.ForeignKey('skills.id'))
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id')
+    )
+
+    skill_id = db.Column(
+        db.Integer,
+        db.ForeignKey('skills.id')
+    )
 
     hours_spent = db.Column(db.Float)
 
-    date = db.Column(db.DateTime, default=datetime.utcnow)
+    topic = db.Column(db.String(200))
+
+    study_type = db.Column(
+        db.String(50)
+    )  # theory / practical
+
+    focus_rating = db.Column(
+        db.Integer
+    )
+
+    date = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
 
     user = db.relationship('User')
     skill = db.relationship('Skill')
+
+class StudyLog(db.Model):
+    __tablename__ = "study_logs"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id")
+    )
+
+    skill_id = db.Column(
+        db.Integer,
+        db.ForeignKey("skills.id")
+    )
+
+    duration = db.Column(db.Float)
+
+    intensity_level = db.Column(
+        db.String(20)
+    )  # low / medium / high
+
+    session_type = db.Column(
+        db.String(20)
+    )  # pomodoro / manual
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+    user = db.relationship("User")
+    skill = db.relationship("Skill")
+
+class Milestone(db.Model):
+    __tablename__ = "milestones"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    skill_id = db.Column(
+        db.Integer,
+        db.ForeignKey("skills.id")
+    )
+
+    name = db.Column(
+        db.String(100)
+    )
+
+    description = db.Column(
+        db.String(255)
+    )
+
+    created_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+    skill = db.relationship("Skill", backref="milestones")
+
+class Achievement(db.Model):
+    __tablename__ = "achievements"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id")
+    )
+
+    title = db.Column(
+        db.String(100)
+    )
+
+    description = db.Column(
+        db.String(255)
+    )
+
+    earned_at = db.Column(
+        db.DateTime,
+        default=datetime.utcnow
+    )
+
+    user = db.relationship("User")
+
+class DailySnapshot(db.Model):
+    __tablename__ = "daily_snapshots"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("users.id")
+    )
+
+    total_hours = db.Column(db.Float)
+
+    productivity_score = db.Column(db.Float)
+
+    date = db.Column(
+        db.Date,
+        default=datetime.utcnow
+    )
+
+    user = db.relationship("User")
+
+class StudyResource(db.Model):
+    __tablename__ = "study_resources"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    skill_id = db.Column(
+        db.Integer,
+        db.ForeignKey("skills.id")
+    )
+
+    title = db.Column(
+        db.String(200)
+    )
+
+    url = db.Column(
+        db.String(500)
+    )
+
+    platform = db.Column(
+        db.String(50)
+    )
+
+    skill = db.relationship(
+        "Skill",
+        backref="resources"
+    )

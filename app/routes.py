@@ -1,5 +1,5 @@
-from flask import Blueprint, render_template, request, redirect, url_for, jsonify, send_file, flash
-from .models import SkillCategory, Skill, UserSkill, Goal, Progress, User
+from flask import Blueprint, render_template, request, redirect, url_for, jsonify, send_file, flash, session
+from .models import SkillCategory, Skill, UserSkill, Goal, Progress, User, StudyResource
 from .extensions import db
 from flask_login import login_required, current_user
 from datetime import datetime, timedelta, date
@@ -238,6 +238,42 @@ def admin_profile():
     return render_template(
         "admin_profile.html",
         user=user
+    )
+
+@main.route("/admin/resources", methods=["GET","POST"])
+@login_required
+def admin_resources():
+
+    if current_user.role != "admin":
+        return redirect(url_for("main.user_dashboard"))
+
+    skills = Skill.query.all()
+
+    if request.method == "POST":
+
+        skill_id = request.form.get("skill_id")
+        title = request.form.get("title")
+        url = request.form.get("url")
+        platform = request.form.get("platform")
+
+        resource = StudyResource(
+            skill_id=skill_id,
+            title=title,
+            url=url,
+            platform=platform
+        )
+
+        db.session.add(resource)
+        db.session.commit()
+
+        return redirect(url_for("main.admin_resources"))
+
+    resources = StudyResource.query.all()
+
+    return render_template(
+        "admin_resources.html",
+        skills=skills,
+        resources=resources
     )
 
 
@@ -634,22 +670,24 @@ def goals_progress():
         goal_progress[skill_name] = round(progress_percent,2)
 
 
-        # Weak / Strong
+        # Weak / Strong Logic
 
         if progress_percent < 40:
             weak_skills.append(skill_name)
-            recommendations.append(f"Increase time for {skill_name}")
+            recommendations.append(
+                f"Increase time for {skill_name}"
+            )
 
         elif progress_percent > 75:
             strong_skills.append(skill_name)
 
 
-        # Priority Levels
+        # Priority from Database
 
-        if progress_percent < 30:
+        if g.priority == "High":
             high_priority.append(skill_name)
 
-        elif progress_percent < 70:
+        elif g.priority == "Medium":
             medium_priority.append(skill_name)
 
         else:
@@ -1050,6 +1088,7 @@ def skill_setup():
         for skill_id in selected_skills:
 
             hours = request.form.get(f"hours_{skill_id}")
+            priority = request.form.get(f"priority_{skill_id}","Medium")
 
             new_skill = UserSkill(
                 user_id=current_user.id,
@@ -1061,7 +1100,8 @@ def skill_setup():
             goal = Goal(
                 user_id=current_user.id,
                 skill_id=skill_id,
-                target_hours_per_week=hours
+                target_hours_per_week=hours,
+                priority=priority
             )
 
             db.session.add(goal)
@@ -1070,7 +1110,10 @@ def skill_setup():
 
         return redirect(url_for("main.user_dashboard"))
 
-    return render_template("setup_skills.html", categories=categories)
+    return render_template(
+        "setup_skills.html",
+        categories=categories
+    )
 
 @main.route("/add-progress", methods=["GET", "POST"])
 @login_required
@@ -1083,10 +1126,24 @@ def add_progress():
         skill_id = request.form.get("skill_id")
         hours = float(request.form.get("hours"))
 
+        topic = request.form.get("topic")
+        study_type = request.form.get("study_type")
+        focus_rating = request.form.get("focus_rating")
+
+        date = request.form.get("date")
+
+        if date:
+            date = datetime.fromisoformat(date)
+
+
         progress = Progress(
             user_id=current_user.id,
             skill_id=skill_id,
-            hours_spent=hours
+            hours_spent=hours,
+            topic=topic,
+            study_type=study_type,
+            focus_rating=focus_rating,
+            date=date
         )
 
         db.session.add(progress)
@@ -1094,8 +1151,10 @@ def add_progress():
 
         return redirect(url_for("main.user_dashboard"))
 
-    return render_template("add_progress.html", user_skills=user_skills)
-
+    return render_template(
+        "add_progress.html",
+        user_skills=user_skills
+    )
 
 @main.route("/timer-progress", methods=["POST"])
 @login_required
@@ -1149,6 +1208,29 @@ def toggle_skill(id):
 
     return redirect(url_for("main.manage_skills"))
 
+@main.route("/update-goal/<int:id>", methods=["POST"])
+@login_required
+def update_goal(id):
+
+    user_skill = UserSkill.query.get(id)
+
+    hours = request.form.get("hours")
+    priority = request.form.get("priority")
+
+    goal = Goal.query.filter_by(
+        user_id=current_user.id,
+        skill_id=user_skill.skill_id
+    ).first()
+
+    if goal:
+        goal.target_hours_per_week = hours
+        goal.priority = priority
+
+    db.session.commit()
+
+    return redirect(
+        url_for("main.manage_skills")
+    )
 
 @main.route("/download-report")
 @login_required
@@ -1443,3 +1525,55 @@ def save_pomodoro():
     db.session.commit()
 
     return jsonify({"status":"success"})
+
+@main.route("/study-resources")
+@login_required
+def study_resources():
+
+    user_skills = current_user.user_skills
+
+    return render_template(
+        "study_resources.html",
+        user_skills=user_skills
+    )
+
+# Start Auto Study
+@main.route("/start-auto-study/<int:skill_id>")
+@login_required
+def start_auto_study(skill_id):
+
+    session["auto_skill"] = skill_id
+    session["start_time"] = datetime.now().isoformat()
+
+    return "", 204
+
+
+# Stop Auto Study
+@main.route("/stop-auto-study")
+@login_required
+def stop_auto_study():
+
+    skill_id = session.get("auto_skill")
+    start_time = session.get("start_time")
+
+    if not skill_id or not start_time:
+        return "", 204
+
+    start_time = datetime.fromisoformat(start_time)
+    end_time = datetime.now()
+
+    time_spent = (end_time - start_time).seconds / 3600
+
+    progress = Progress(
+        user_id=current_user.id,
+        skill_id=skill_id,
+        hours_spent=time_spent
+    )
+
+    db.session.add(progress)
+    db.session.commit()
+
+    session.pop("auto_skill", None)
+    session.pop("start_time", None)
+
+    return "", 204

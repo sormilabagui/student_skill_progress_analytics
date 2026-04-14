@@ -97,48 +97,42 @@
 
         <h2>Skill Tracker</h2>
 
-        <!--<p>Dashboard</p>
-        <p>My Skills</p>
-        <p>Progress</p>
-        <p>Logout</p>
-        <a href="{{ url_for('main.add_progress') }}">Add Progress</a>
-        <a href="{{ url_for('main.manage_skills') }}">Manage Skills</a>-->
+<a href="{{ url_for('main.user_dashboard') }}">
+<p>🏠 Dashboard</p>
+</a>
 
-        <br>
+<a href="{{ url_for('main.manage_skills') }}">
+<p>🧠 My Skills</p>
+</a>
+<a href="{{ url_for('main.study_resources') }}">
+<p>📚 Study Resources</p>
+</a>
+<a href="{{ url_for('main.goals_progress') }}">
+<p>🎯 Goals & Progress</p>
+</a>
 
-        <a href="{{ url_for('main.user_dashboard') }}">
-        <p> Dashboard</p>
-        </a>
+<a href="{{ url_for('main.analytics') }}">
+<p>📊 Analytics</p>
+</a>
 
-        <a href="{{ url_for('main.manage_skills') }}">
-        <p> Manage Skills</p>
-        </a>
+<a href="{{ url_for('main.productivity') }}">
+<p>⏱ Productivity</p>
+</a>
 
-        <a href="{{ url_for('main.goals_progress') }}">
-        <p>🎯 Goals & Progress</p>
-        </a>
+<a href="{{ url_for('main.pomodoro') }}">
+<p>🍅 Pomodoro</p>
+</a>
 
-        <a href="{{ url_for('main.analytics') }}">
-        <p> Analytics</p>
-        </a>
+<a href="{{ url_for('main.reports') }}">
+<p>📄 Reports</p>
+</a>
+<a href="{{ url_for('main.add_progress') }}">
+<p>➕ Add Progress</p>
+</a>
 
-        <a href="{{ url_for('main.productivity') }}">
-        <p>⏱ Productivity</p>
-        </a>
-
-        <a href="{{ url_for('main.pomodoro') }}">
-        <p> Pomodoro Timer</p>
-        </a>
-
-        <a href="{{ url_for('main.reports') }}">
-        <p>📄 Reports</p>
-        </a>
-
-        <a href="{{ url_for('main.add_progress') }}">
-        <p> Add Progress</p>
-        </a>
-
-        <a href="{{ url_for('auth.logout') }}"><p>Logout</p></a>
+<a href="{{ url_for('auth.logout') }}">
+<p>🚪 Logout</p>
+</a>
 
     </div>
 

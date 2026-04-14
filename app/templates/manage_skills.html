@@ -1,28 +1,183 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+
 <title>Skill Management</title>
+
+<link rel="stylesheet">
+
+<style>
+
+        body{
+            margin:0;
+            font-family:Arial;
+        }
+
+        .container{
+            display:flex;
+        }
+
+        .sidebar{
+            width:220px;
+            background:#1e293b;
+            color:white;
+            height:100vh;
+            padding:20px;
+        }
+        .sidebar a{
+            text-decoration:none;
+            color:white;
+        }
+
+        .sidebar p{
+            padding:10px;
+            border-radius:5px;
+        }
+
+        .sidebar p:hover{
+            background:#334155;
+            cursor:pointer;
+        }
+
+        .content{
+            flex:1;
+            padding:30px;
+            background:#f5f7fa;
+        }
+
+        .cards{
+            display:flex;
+            gap:20px;
+            margin-bottom:30px;
+        }
+
+        .card{
+            background:white;
+            padding:20px;
+            border-radius:8px;
+            width:200px;
+            box-shadow:0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .section{
+            background:white;
+            padding:20px;
+            margin-bottom:20px;
+            border-radius:8px;
+        }
+        .timer-card{
+            text-align:center;
+            padding:20px;
+
+            }
+
+            .start-btn{
+
+            padding:12px 20px;
+            background:#2563eb;
+            color:white;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+
+            }
+
+            .start-btn:hover{
+
+            background:#1e40af;
+
+            }
+            .skill-table{
+                width:100%;
+                background:white;
+                border-collapse:collapse;
+                margin: 30px;
+                }
+
+                .skill-table th,
+                .skill-table td{
+                padding:12px;
+                border-bottom:1px solid #eee;
+                text-align:left;
+                }
+
+                .primary-btn{
+                cursor: pointer;
+                padding:10px 20px;
+                background:#4f46e5;
+                color:white;
+                border:none;
+                border-radius:6px;
+                }
+
+    </style>
 </head>
 
 <body>
 
+<div class="container">
+
+<div class="sidebar">
+
+        <h2>Skill Tracker</h2>
+
+<a href="{{ url_for('main.user_dashboard') }}">
+<p>🏠 Dashboard</p>
+</a>
+
+<a href="{{ url_for('main.manage_skills') }}">
+<p>🧠 My Skills</p>
+</a>
+<a href="{{ url_for('main.study_resources') }}">
+<p>📚 Study Resources</p>
+</a>
+<a href="{{ url_for('main.goals_progress') }}">
+<p>🎯 Goals & Progress</p>
+</a>
+
+<a href="{{ url_for('main.analytics') }}">
+<p>📊 Analytics</p>
+</a>
+
+<a href="{{ url_for('main.productivity') }}">
+<p>⏱ Productivity</p>
+</a>
+
+<a href="{{ url_for('main.pomodoro') }}">
+<p>🍅 Pomodoro</p>
+</a>
+
+<a href="{{ url_for('main.reports') }}">
+<p>📄 Reports</p>
+</a>
+<a href="{{ url_for('main.add_progress') }}">
+<p>➕ Add Progress</p>
+</a>
+
+<a href="{{ url_for('auth.logout') }}">
+<p>🚪 Logout</p>
+</a>
+
+    </div>
+
+<div class="content">
+
 <h2>Manage Skills</h2>
 
 <a href="{{ url_for('main.skill_setup') }}">
-<button>Add New Skills</button>
+<button class="primary-btn">Add New Skills</button>
 </a>
 
 <br><br>
 
-{% if user_skills|length == 0 %}
-<p>No skills added yet</p>
-{% endif %}
-
-<table border="1" cellpadding="10">
+<table class="skill-table">
 
 <tr>
 <th>Skill</th>
 <th>Category</th>
+<th>Hours/Week</th>
+<th>Priority</th>
 <th>Status</th>
 <th>Action</th>
 </tr>
@@ -36,25 +191,56 @@
 <td>{{ us.skill.skill_name }}</td>
 
 <td>
-{% if us.skill.category %}
-{{ us.skill.category.name }}
-{% else %}
-No Category
-{% endif %}
+{{ us.skill.category.name if us.skill.category else "No Category" }}
 </td>
 
 <td>
+
+<form method="POST"
+action="{{ url_for('main.update_goal', id=us.id) }}">
+
+<input 
+type="number"
+name="hours"
+value="{{ us.user.goals | selectattr('skill_id','equalto', us.skill.id) | map(attribute='target_hours_per_week') | first }}"
+min="1"
+max="40"
+>
+
+</td>
+
+<td>
+
+<select name="priority">
+
+<option value="High">High</option>
+<option value="Medium">Medium</option>
+<option value="Low">Low</option>
+
+</select>
+
+</td>
+
+<td>
+
 {% if us.is_active %}
 Active
 {% else %}
 Inactive
 {% endif %}
+
 </td>
 
 <td>
 
+<button class="primary-btn" type="submit">
+Update
+</button>
+
+</form>
+
 <a href="{{ url_for('main.toggle_skill', id=us.id) }}">
-<button>Toggle</button>
+<button class="primary-btn">Toggle</button>
 </a>
 
 </td>
@@ -67,5 +253,10 @@ Inactive
 
 </table>
 
+</div>
+
+</div>
+
 </body>
+
 </html>
