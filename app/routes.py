@@ -208,16 +208,20 @@ def admin_user_detail(id):
         user_id=id
     ).order_by(Progress.id.desc()).limit(10).all()
 
-    total_hours = db.session.query(
+    total_minutes = db.session.query(
         db.func.sum(Progress.hours_spent)
     ).filter_by(user_id=id).scalar() or 0
+
+    hours = int(total_minutes // 60)
+    minutes = int(total_minutes % 60)
 
     return render_template(
         "admin_user_detail.html",
         user=user,
         user_skills=user_skills,
         progress=progress,
-        total_hours=round(total_hours,2)
+        hours=hours,
+        minutes=minutes
     )
 
 @main.route("/admin/profile", methods=["GET","POST"])

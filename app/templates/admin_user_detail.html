@@ -101,11 +101,15 @@ text-align:left;
 <a href="/admin/manage-skill">
 <p>Manage Skills</p>
 </a>
-
-<a href="/admin/users">
-<p>Users</p>
+<a href="{{ url_for('main.admin_resources') }}">
+<p>Study Resources</p>
 </a>
-
+<a href="/admin/users">
+<p>User Management</p>
+</a>
+<a href="/admin/profile">
+<p>Admin Profile</p>
+</a>
 <a href="{{ url_for('auth.logout') }}">
 <p>Logout</p>
 </a>
@@ -121,7 +125,12 @@ text-align:left;
 
 <div class="card">
 <h3>Total Focus Time</h3>
-<h2>{{ total_hours }} mins</h2>
+<h2>{% if hours == 0 and minutes == 0 %}
+No Data Yet
+{% else %}
+{{ hours }} hrs {{ minutes }} mins
+{% endif %}
+</h2>
 </div>
 
 <div class="card">
@@ -139,16 +148,13 @@ text-align:left;
 
 <tr>
 <th>Skill</th>
-<th>Level</th>
-<th>Goal</th>
 </tr>
 
 {% for s in user_skills %}
 
 <tr>
 <td>{{ s.skill.skill_name }}</td>
-<td>{{ s.level }}</td>
-<td>{{ s.goal }}</td>
+
 </tr>
 
 {% endfor %}
